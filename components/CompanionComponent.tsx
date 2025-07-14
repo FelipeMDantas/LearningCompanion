@@ -71,6 +71,17 @@ const CompanionComponent = ({
     setIsMuted(!isMuted);
   };
 
+  const handleCall = async () => {
+    setCallStatus(CallStatus.CONNECTING);
+
+    const assistantOverrides = {
+      variableValues: { subject, topic, style },
+      clientMessages: ["transcript"],
+      serverMessages: [],
+    };
+  };
+  const handleDisconnect = async () => {};
+
   return (
     <section className="flex flex-col h-[70vh]">
       <section className="flex gap-8 max-sm:flex-col">
@@ -134,8 +145,34 @@ const CompanionComponent = ({
               width={36}
               height={36}
             />
+            <p className="max-sm:hidden">
+              {isMuted ? "Turn on microphone" : "Turn off microphone"}
+            </p>
+          </button>
+
+          <button
+            className={cn(
+              "rounded-lg py-2 cursor-pointer transition-colors w-full text-white",
+              callStatus === CallStatus.ACTIVE ? "bg-red-700" : "bg-primary",
+              callStatus === CallStatus.CONNECTING && "animate-pulse"
+            )}
+            onClick={
+              callStatus === CallStatus.ACTIVE ? handleDisconnect : handleCall
+            }
+          >
+            {callStatus === CallStatus.ACTIVE
+              ? "End Sessions"
+              : callStatus === CallStatus.CONNECTING
+              ? "Connecting"
+              : "Start Session"}
           </button>
         </div>
+      </section>
+
+      <section className="transcript">
+        <div className="transcript-message no-scrollbar">MESSAGES</div>
+
+        <div className="transcript-fade" />
       </section>
     </section>
   );
