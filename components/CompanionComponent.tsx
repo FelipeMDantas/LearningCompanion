@@ -1,6 +1,6 @@
 "use client";
 
-import { cn, getSubjectColor } from "@/lib/utils";
+import { cn, configureAssistant, getSubjectColor } from "@/lib/utils";
 import { vapi } from "@/lib/vapi.sdk";
 import Lottie, { LottieRefCurrentProps } from "lottie-react";
 import Image from "next/image";
@@ -79,8 +79,15 @@ const CompanionComponent = ({
       clientMessages: ["transcript"],
       serverMessages: [],
     };
+
+    //@ts-expect-error
+    vapi.start(configureAssistant(voice, style), assistantOverrides);
   };
-  const handleDisconnect = async () => {};
+  const handleDisconnect = async () => {
+    setCallStatus(CallStatus.FINISHED);
+
+    vapi.stop();
+  };
 
   return (
     <section className="flex flex-col h-[70vh]">
