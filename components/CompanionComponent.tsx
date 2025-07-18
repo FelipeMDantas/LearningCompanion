@@ -27,6 +27,7 @@ const CompanionComponent = ({
   const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [messages, setMessages] = useState<SavedMessage[]>([]);
 
   const lottieRef = useRef<LottieRefCurrentProps>(null);
 
@@ -43,15 +44,20 @@ const CompanionComponent = ({
   useEffect(() => {
     const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
     const onCallEnd = () => setCallStatus(CallStatus.FINISHED);
-    const onMessage = () => {};
+    const onMessage = (message: Message) => {
+      if (message.type === "transcript" && message.transcriptType === "final") {
+        const newMessage = { role: message.role, content: message.transcript };
+        setMessages((prev) => [newMessage, ...prev]);
+      }
+    };
     const onSpeachStart = () => setIsSpeaking(true);
     const onSpeachEnd = () => setIsSpeaking(false);
-    const oneError = (error: Error) => console.log("Error", error);
+    const onError = (error: Error) => console.log("Error", error);
 
     vapi.on("call-start", onCallStart);
     vapi.on("call-end", onCallEnd);
     vapi.on("message", onMessage);
-    vapi.on("error", oneError);
+    vapi.on("error", onError);
     vapi.on("speech-start", onSpeachStart);
     vapi.on("speech-end", onSpeachEnd);
 
@@ -59,7 +65,7 @@ const CompanionComponent = ({
       vapi.off("call-start", onCallStart);
       vapi.off("call-end", onCallEnd);
       vapi.off("message", onMessage);
-      vapi.off("error", oneError);
+      vapi.off("error", onError);
       vapi.off("speech-start", onSpeachStart);
       vapi.off("speech-end", onSpeachEnd);
     };
@@ -177,7 +183,23 @@ const CompanionComponent = ({
       </section>
 
       <section className="transcript">
-        <div className="transcript-message no-scrollbar">MESSAGES</div>
+        <div className="transcript-message no-scrollbar">
+          {messages.map((message, index) => {
+            if (message.role === "assistant") {
+              return (
+                <p key={index} className="max-sm:text-sm">
+                  {name.split(" ")[0].replace("/[.,]/g", "")}: {message.content}
+                </p>
+              );
+            } else {
+              return (
+                <p key={index} className="text-primary max-sm:text-sm">
+                  {userName} : {message.content}
+                </p>
+              );
+            }
+          })}
+        </div>
 
         <div className="transcript-fade" />
       </section>
