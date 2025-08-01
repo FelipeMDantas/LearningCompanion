@@ -12,6 +12,14 @@
 
 > Using this platform, you can elaborate learning companions, creating them by choosing a general subject, complementary topics, voice, style and estimating session duration. This app also provides features such as sign up, sign in, and profile management.
 
+### Take a look at the page
+
+<img src = gif/page_gif.gif>
+
+### or... give it a try!
+
+https://learning-companion-ecru.vercel.app/
+
 ## Tech
 
 A couple of technologies were employed in this project. Among them:
